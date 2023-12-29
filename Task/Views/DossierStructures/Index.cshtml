@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jstree basic demos</title>
+    <style>
+
+        h1 {
+            font-size: 1.8em;
+        }
+
+        .demo {
+            overflow: auto;
+            border: 1px solid silver;
+            min-height: 100px;
+            border-radius: 10px;
+            overflow-y: auto;
+        }
+    </style>
+    <link rel="stylesheet" href="./../../dist/themes/default/style.min.css" />
+
+</head>
+<body>
+    <div id="kt_docs_jstree_contextual" class="demo"></div>
+    <form method="post" asp-controller="DossierStructures" asp-action="Index">
+        <input hidden name="selectedItems" id="selectedItems" />
+        <input type="submit" value="Submit" />
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+    <script>
+        $('#kt_docs_jstree_contextual').on('changed.jstree', function (e, data) {
+            var tree = $("#kt_docs_jstree_contextual").jstree();
+            var nodes = tree.get_json(null, { flat: true }); // получить все узлы в одном массиве
+// получить все узлы в виде JSON-объекта
+            var selectedItems = []; // создать пустой массив для выбранных элементов
+            $.each(nodes, function (i, node) { // перебрать все узлы
+                // добавить узел в массив, используя его текст, id и родителя
+                selectedItems.push({
+                    text: node.text,
+                    id: node.id,
+                    orderNumber: node.li_attr.id,
+                    parent: node.parent
+
+                });
+            });
+
+            // сериализовать массив в JSON-строку и сохранить в скрытом поле
+            $('#selectedItems').val(JSON.stringify(selectedItems));
+
+        })
+.jstree({
+            "core": {
+                "themes": {
+                    "responsive": false
+                },
+                // so that create works
+                "check_callback": true,
+                "data": @Html.Raw(ViewBag.Json)
+               } ,
+            "types": {
+                "default": {
+                    "icon": "ki-solid ki-folder text-primary"
+                },
+                "file": {
+                    "icon": "ki-solid ki-file  text-primary"
+                }
+            },
+            "state": { "key": "demo2" },
+            "plugins": ["dnd", "contextmenu", "state", "types"]
+
+});
+    </script>
+</body>
+</html>
