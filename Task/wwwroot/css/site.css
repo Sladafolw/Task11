@@ -20,3 +20,38 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Стиль ссылки по умолчанию */
+a.nav-link {
+    color: black;
+    background-color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 3px solid beige;
+    border-radius: 20px;
+}
+
+/* Стиль ссылки при нажатии */
+a.nav-link:active {
+    color: white;
+    background-color: black;
+}
+
+/* Стиль ссылки при фокусе */
+a.nav-link:focus {
+    color: white;
+    border-radius:20px;
+    background-color :beige;
+    outline: none; /* Убираем стандартный контур */
+}
+h1 {
+    font-size: 1.8em;
+}
+
+.demo {
+    overflow: auto;
+    border: 1px solid silver;
+    min-height: 100px;
+    border-radius: 10px;
+    overflow-y: auto;
+}

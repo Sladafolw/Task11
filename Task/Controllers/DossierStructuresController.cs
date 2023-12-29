@@ -42,47 +42,69 @@ namespace Task1.Controllers
         [HttpPost]
         public IActionResult Index(string selectedItems)
         {
-            if (selectedItems.Length == 0) { return RedirectToAction("Index"); }
-            _context.DossierStructures.RemoveRange(_context.DossierStructures); // удалить все записи из таблицы Users
+            // Проверяем, что строка не пустая
+            if (selectedItems.Length == 0)
+            {
+                return RedirectToAction("Index");
+            }
+
+            // Удаляем все записи из таблицы Users
+            _context.DossierStructures.RemoveRange(_context.DossierStructures);
             _context.SaveChanges();
+
+            // Преобразуем строку в список объектов TreeViewNode
             List<TreeViewNode> items = JsonConvert.DeserializeObject<List<TreeViewNode>>(selectedItems);
+
+            // Создаем переменные для хранения данных
             DossierStructure doss = new DossierStructure();
             int lastParent = 0;
             int OrderNumber = 0;
-            Dictionary<string,int> idParentId = new Dictionary<string, int>(); // 
+            Dictionary<string, int> idParentId = new Dictionary<string, int>(); // Словарь для хранения id и parentid элементов
+
+            // Перебираем все элементы в списке
             foreach (var a in items)
             {
-
+                // Если элемент является корневым
                 if (a.parent == "#")
                 {
+                    // Создаем новый объект DossierStructure с данными из элемента
                     doss = new DossierStructure()
                     {
                         Name = TextRegexS(a.text),
                         SectionCode = NumberRegexS(a.text),
                         OrderNumber = 0
                     };
+                    // Сбрасываем счетчик порядкового номера
                     OrderNumber = 0;
                 }
+                // Если элемент является дочерним
                 else
                 {
+                    // Увеличиваем счетчик порядкового номера
                     OrderNumber++;
+                    // Создаем новый объект DossierStructure с данными из элемента и parentid из словаря
                     doss = new DossierStructure()
                     {
                         Name = TextRegexS(a.text),
                         ParentId = idParentId.ContainsKey(a.parent) ? idParentId[a.parent] : lastParent,
-                    SectionCode = NumberRegexS(a.text),
+                        SectionCode = NumberRegexS(a.text),
                         OrderNumber = OrderNumber
                     };
                 }
 
+                // Добавляем объект в контекст базы данных
                 _context.DossierStructures.Add(doss);
+                // Сохраняем изменения в базе данных
                 _context.SaveChanges();
-                idParentId.TryAdd(a.id, doss.Id); // добавляем пару ключ-значение в словарь, если ключ не существует
+                // Добавляем пару ключ-значение в словарь, если ключ не существует
+                idParentId.TryAdd(a.id, doss.Id);
+                // Если элемент является корневым, запоминаем его id
                 if (a.parent == "#")
+                {
                     lastParent = doss.Id;
+                }
             }
-
-
+            // Возвращаемся на главную страницу
             return RedirectToAction("Index");
         }
 
