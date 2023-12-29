@@ -85,7 +85,6 @@
               "action": function (obj) {
                 $node = tree.create_node($node); // Создать дочерний узел
                   tree.edit($node); // Редактировать узел
-                  tree.refresh();
               }
             },
             "create_after": { // Элемент меню для создания узла после текущего
@@ -95,7 +94,6 @@
               "action": function (obj) {
                 $node = tree.create_node($node.parent, {}, "after", $node); // Создать узел после текущего
                   tree.edit($node); // Редактировать узел
-                  tree.refresh();
               }
             },
             "create_before": { // Элемент меню для создания узла перед текущим
@@ -105,7 +103,6 @@
               "action": function (obj) {
                 $node = tree.create_node($node.parent, {}, "before", $node); // Создать узел перед текущим
                   tree.edit($node); // Редактировать узел
-                  tree.refresh();
               }
             },
             "delete": { // Элемент меню для удаления узла
@@ -114,7 +111,6 @@
               "label": "Удалить узел",
               "action": function (obj) {
                   tree.delete_node($node); // Удалить узел
-                  tree.refresh();
               }
             }, "edit": { // Элемент меню для редактирования узла
               "separator_before": false,
@@ -122,7 +118,6 @@
               "label": "Редактировать узел",
               "action": function (obj) {
                   tree.edit($node); // Редактировать узел
-                  tree.refresh();
                 }
 
             }
