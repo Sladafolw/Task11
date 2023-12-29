@@ -24,7 +24,21 @@
     info.innerHTML = '<p>SectionId: ' + number + '</p><p>Текст: ' + textWithoutNumber + '</p>'; // Вставить данные в элемент
     info.style.display = 'block'; // Показать элемент
   });
-
+        $('#kt_docs_jstree_contextual').on('move_node.jstree', function (e, data) {
+            var tree = $("#kt_docs_jstree_contextual").jstree(); // Получить объект дерева
+            var nodes = tree.get_json(null, { flat: true }); // Получить все узлы в виде JSON-объекта
+            var selectedItems = []; // Создать пустой массив для выбранных элементов
+            $.each(nodes, function (i, node) { // Перебрать все узлы
+                selectedItems.push({ // Добавить объект с данными узла в массив
+                    text: node.text,
+                    id: node.id,
+                    orderNumber: node.li_attr.id,
+                    parent: node.parent
+                });
+            });
+            // Сериализовать массив в JSON-строку и сохранить в скрытом поле
+            $('#selectedItems').val(JSON.stringify(selectedItems));
+        })
   // Обработчик события изменения дерева
   $('#kt_docs_jstree_contextual').on('changed.jstree', function (e, data) {
     var tree = $("#kt_docs_jstree_contextual").jstree(); // Получить объект дерева
@@ -70,7 +84,8 @@
               "label": "Добавить подчиненный узел",
               "action": function (obj) {
                 $node = tree.create_node($node); // Создать дочерний узел
-                tree.edit($node); // Редактировать узел
+                  tree.edit($node); // Редактировать узел
+                  tree.refresh();
               }
             },
             "create_after": { // Элемент меню для создания узла после текущего
@@ -79,7 +94,8 @@
               "label": "Добавить строку после",
               "action": function (obj) {
                 $node = tree.create_node($node.parent, {}, "after", $node); // Создать узел после текущего
-                tree.edit($node); // Редактировать узел
+                  tree.edit($node); // Редактировать узел
+                  tree.refresh();
               }
             },
             "create_before": { // Элемент меню для создания узла перед текущим
@@ -88,7 +104,8 @@
               "label": "Добавить строку перед",
               "action": function (obj) {
                 $node = tree.create_node($node.parent, {}, "before", $node); // Создать узел перед текущим
-                tree.edit($node); // Редактировать узел
+                  tree.edit($node); // Редактировать узел
+                  tree.refresh();
               }
             },
             "delete": { // Элемент меню для удаления узла
@@ -96,15 +113,18 @@
               "separator_after": false,
               "label": "Удалить узел",
               "action": function (obj) {
-                tree.delete_node($node); // Удалить узел
+                  tree.delete_node($node); // Удалить узел
+                  tree.refresh();
               }
             }, "edit": { // Элемент меню для редактирования узла
               "separator_before": false,
               "separator_after": false,
               "label": "Редактировать узел",
               "action": function (obj) {
-                tree.edit($node); // Редактировать узел
-              }
+                  tree.edit($node); // Редактировать узел
+                  tree.refresh();
+                }
+
             }
           };
         }

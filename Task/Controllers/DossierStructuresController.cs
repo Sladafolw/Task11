@@ -57,7 +57,6 @@ namespace Task1.Controllers
 
             // Создаем переменные для хранения данных
             DossierStructure doss = new DossierStructure();
-            int lastParent = 0;
             int OrderNumber = 0;
             Dictionary<string, int> idParentId = new Dictionary<string, int>(); // Словарь для хранения id и parentid элементов
 
@@ -86,7 +85,7 @@ namespace Task1.Controllers
                     doss = new DossierStructure()
                     {
                         Name = TextRegexS(a.text),
-                        ParentId = idParentId.ContainsKey(a.parent) ? idParentId[a.parent] : lastParent,
+                        ParentId =  idParentId[a.parent],
                         SectionCode = NumberRegexS(a.text),
                         OrderNumber = OrderNumber
                     };
@@ -99,10 +98,6 @@ namespace Task1.Controllers
                 // Добавляем пару ключ-значение в словарь, если ключ не существует
                 idParentId.TryAdd(a.id, doss.Id);
                 // Если элемент является корневым, запоминаем его id
-                if (a.parent == "#")
-                {
-                    lastParent = doss.Id;
-                }
             }
             // Возвращаемся на главную страницу
             return RedirectToAction("Index");
