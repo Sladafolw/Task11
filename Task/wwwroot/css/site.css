@@ -64,8 +64,8 @@ h1 {
 
 #info {
     display: inline-block;
-    float: right; 
-    margin-right: 300px; 
+    float: right;
+    margin-right: 50vh;
 }
 
 form {
