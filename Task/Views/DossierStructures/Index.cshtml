@@ -22,6 +22,7 @@
 </head>
 <body>
     <div id="kt_docs_jstree_contextual" style=" max-height: 50vh; overflow-y: auto; " class="demo"></div>
+    <div id="info"></div>
     <form method="post" asp-controller="DossierStructures" asp-action="Index">
         <input hidden name="selectedItems" id="selectedItems" />
         <input type="submit" value="Submit" />
@@ -30,13 +31,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 
     <script>
+$('#kt_docs_jstree_contextual').on('select_node.jstree', function (e, data) {
+            var node = data.node; // получить выбранный узел
+            var text = node.text; // получить текст узла
+    var number = text.match(/\d+(\.\d+)*/)[0]; // извлечь число из текста с помощью регулярного выражения, включая точки
+            var textWithoutNumber = text.replace(/\d+(\.\d+)*\s*/, ''); 
+            var info = document.getElementById('info'); 
+            info.innerHTML = '<p>SectionId: ' + number + '</p><p>Текст: ' + textWithoutNumber + '</p>'; 
+            info.style.display = 'block'; 
+        });
+
         $('#kt_docs_jstree_contextual').on('changed.jstree', function (e, data) {
             var tree = $("#kt_docs_jstree_contextual").jstree();
-            var nodes = tree.get_json(null, { flat: true }); // получить все узлы в одном массиве
+            var nodes = tree.get_json(null, { flat: true });
 // получить все узлы в виде JSON-объекта
             var selectedItems = []; // создать пустой массив для выбранных элементов
             $.each(nodes, function (i, node) { // перебрать все узлы
-                // добавить узел в массив, используя его текст, id и родителя
+            
                 selectedItems.push({
                     text: node.text,
                     id: node.id,
@@ -51,11 +62,12 @@
 
         })
 .jstree({
-            "core": {
+    "core": {
+        "strings": { "lang": "ru" },
                 "themes": {
                     "responsive": false
                 },
-                // so that create works
+      
                 "check_callback": true,
                 "data": @Html.Raw(ViewBag.Json)
                } ,
@@ -68,8 +80,56 @@
                 }
             },
             "state": { "key": "demo2" },
-            "plugins": ["dnd", "contextmenu", "state", "types"]
-
+    "plugins": ["dnd", "contextmenu", "state", "types"],
+    "contextmenu": { 
+        "items": function ($node) {
+            var tree = $("#kt_docs_jstree_contextual").jstree(true);
+            return {
+                "create_child": { 
+                    "separator_before": false,
+                    "separator_after": false,
+                    "label": "Добавить подчиненный узел", 
+                    "action": function (obj) { 
+                        $node = tree.create_node($node); 
+                        tree.edit($node); 
+                    }
+                },
+                "create_after": {
+                    "separator_before": false,
+                    "separator_after": false,
+                    "label": "Добавить строку после",
+                    "action": function (obj) {
+                        $node = tree.create_node($node.parent, {}, "after", $node); 
+                        tree.edit($node);
+                    }
+                },
+                "create_before": { 
+                    "separator_before": false,
+                    "separator_after": false,
+                    "label": "Добавить строку перед",
+                    "action": function (obj) {
+                        $node = tree.create_node($node.parent, {}, "before", $node);
+                        tree.edit($node);
+                    }
+                },
+                "delete": { 
+                    "separator_before": false,
+                    "separator_after": false,
+                    "label": "Удалить узел",
+                    "action": function (obj) {
+                        tree.delete_node($node); 
+                    }
+                },"edit": { 
+                    "separator_before": false,
+                    "separator_after": false,
+                    "label": "Редактировать узел",
+                    "action": function (obj) {
+                        tree.edit($node);
+                    }
+                }
+            };
+        }
+    }
 });
     </script>
 </body>

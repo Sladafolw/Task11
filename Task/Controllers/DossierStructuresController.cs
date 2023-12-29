@@ -49,6 +49,7 @@ namespace Task1.Controllers
             DossierStructure doss = new DossierStructure();
             int lastParent = 0;
             int OrderNumber = 0;
+            Dictionary<string,int> idParentId = new Dictionary<string, int>(); // 
             foreach (var a in items)
             {
 
@@ -68,14 +69,15 @@ namespace Task1.Controllers
                     doss = new DossierStructure()
                     {
                         Name = TextRegexS(a.text),
-                        ParentId = lastParent,
-                        SectionCode = NumberRegexS(a.text),
+                        ParentId = idParentId.ContainsKey(a.parent) ? idParentId[a.parent] : lastParent,
+                    SectionCode = NumberRegexS(a.text),
                         OrderNumber = OrderNumber
                     };
                 }
 
                 _context.DossierStructures.Add(doss);
                 _context.SaveChanges();
+                idParentId.TryAdd(a.id, doss.Id); // добавляем пару ключ-значение в словарь, если ключ не существует
                 if (a.parent == "#")
                     lastParent = doss.Id;
             }
